@@ -1,5 +1,3 @@
--- dofile("../data/addon_d/marketshowlevel/marketshowlevel.lua");
-
 CHAT_SYSTEM("MARKET SHOW LEVEL SC v1.0.4 loaded!");
 
 local itemColor = {
@@ -64,25 +62,6 @@ function MARKETSHOWLEVEL_ON_INIT(addon, frame)
 	end
 end
 
-function GetItemValueColor(propname,value, max)
-	local index = 0;
-
-	if propname == "MSPD" or propname == "SR" or propname == "SDR" then
-		index = 0
-	else
-		if value > (max * 0.95) then
-			index = 3
-		elseif value > (max * 0.85) then
-			index = 2
-		elseif value > (max * 0.75) then
-			index = 1
-		end
-	end
-
-	return itemColor[index]
-end
-
-
 function GetGemInfo(itemObj)
 	local gemInfo = "";
 	local fn = GET_FULL_NAME_OLD or GET_FULL_NAME;
@@ -91,7 +70,6 @@ function GetGemInfo(itemObj)
 	local rstLevel;
 	local gemName;
 	local exp;
-	-- local space= "";
 	local color="";
 
 	for i = 0, 4 do
@@ -103,11 +81,7 @@ function GetGemInfo(itemObj)
 		if socketId > 0 then
 			if #gemInfo > 0 then
 				gemInfo = gemInfo..",";
-				-- space = space .. "  ";
 			end
-			-- if i==3 then
-			-- 	space = space .. " ";
-			-- end
 
 			local obj = GetClassByType("Item", socketId);
 			gemName = fn(obj);
@@ -136,12 +110,10 @@ function GetGemInfo(itemObj)
 			end
 
 			if gemLevel <= rstLevel then
-				gemInfo = gemInfo .. "{#FF7F50}{ol}Lv" .. gemLevel .. ":" .. gemName .. "{/}{/}";
+				gemInfo = gemInfo .. "{#FF7F50}{ol}Lv" .. gemLevel .. ":" .. GET_ITEM_IMG_BY_CLS(obj, 22) .. "{/}{/}";
 			else
-				gemInfo = gemInfo .. "{#FFFFFF}{ol}Lv" .. gemLevel .. ":" .. gemName .. "{/}{/}";
+				gemInfo = gemInfo .. "{#FFFFFF}{ol}Lv" .. gemLevel .. ":" .. GET_ITEM_IMG_BY_CLS(obj, 22) .. "{/}{/}";
 			end
-
-			-- space = space .. "                 ";
 
 		end
 	end
@@ -156,7 +128,6 @@ end
 
 function GetHatProp(itemObj)
 	local prop = "";
-	-- local space= "";
 	for i = 1 , 3 do
 		local propName = "";
 		local propValue = 0;
@@ -165,7 +136,6 @@ function GetHatProp(itemObj)
 		if itemObj[propValueStr] ~= 0 and itemObj[propNameStr] ~= "None" then
 			if #prop > 0 then
 				prop = prop..",";
-				-- space = space .. " ";
 			end
 
 			propName = itemObj[propNameStr];
@@ -174,7 +144,6 @@ function GetHatProp(itemObj)
 			propValueColored = GetItemValueColor(propName, propValue, propList[propName].max);
 
 			prop = prop .. string.format("%s:{#%s}{ol}%4d{/}{/}", propList[propName].name, propValueColored, propValue);
-			-- space = space .. "         ";
 		end
 	end
 
@@ -186,13 +155,33 @@ function GetHatProp(itemObj)
 
 end
 
+function GetItemValueColor(propname,value, max)
+	local index = 0;
+
+	if propname == "MSPD" or propname == "SR" or propname == "SDR" then
+		index = 0
+	else
+		if value > (max * 0.95) then
+			index = 3
+		elseif value > (max * 0.85) then
+			index = 2
+		elseif value > (max * 0.75) then
+			index = 1
+		end
+	end
+
+	return itemColor[index]
+end
+
 function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
-	if frame:IsVisible() == 0 then
+	_G["ON_MARKET_ITEM_LIST_OLD_MARKET"](frame, msg, argStr, argNum);
+
+	if (marktioneer ~= nil and (marktioneer.fullscaning or marktioneer.refreshing)) then
 		return;
 	end
 
 	local itemlist = GET_CHILD(frame, "itemlist", "ui::CDetailListBox");
-	itemlist:RemoveAllChild();
+
 	local mySession = session.GetMySession();
 	local cid = mySession:GetCID();
 
@@ -201,30 +190,12 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		local marketItem = session.market.GetItemByIndex(i);
 		local itemObj = GetIES(marketItem:GetObject());
 
--- add code start
-		local itemLevel = GET_ITEM_LEVEL(itemObj);
-		local itemGroup = itemObj.GroupName;
--- add code end
-
-		local refreshScp = itemObj.RefreshScp;
-		if refreshScp ~= "None" then
-			refreshScp = _G[refreshScp];
-			refreshScp(itemObj);
-		end	
-
-		local ctrlSet = INSERT_CONTROLSET_DETAIL_LIST(itemlist, i, 0, "market_item_detail");
-		ctrlSet = tolua.cast(ctrlSet, "ui::CControlSet");
-		ctrlSet:EnableHitTestSet(1);
-		ctrlSet:SetUserValue("DETAIL_ROW", i);
-
-		SET_ITEM_TOOLTIP_ALL_TYPE(ctrlSet, marketItem, itemObj.ClassName, "market", marketItem.itemType, marketItem:GetMarketGuid());
-
-		local pic = GET_CHILD(ctrlSet, "pic", "ui::CPicture");
-		pic:SetImage(itemObj.Icon);
+		local ctrlSet = itemlist:GetChild("DETAIL_ITEM_" .. i .. "_0");
 
 		local name = ctrlSet:GetChild("name");
 
--- add code start
+		local itemLevel = GET_ITEM_LEVEL(itemObj);
+		local itemGroup = itemObj.GroupName;
 
 		if itemGroup == "Weapon" or itemGroup == "SubWeapon" then
 			local gemInfo = GetGemInfo(itemObj);
@@ -241,79 +212,7 @@ function ON_MARKET_ITEM_LIST_HOOKED(frame, msg, argStr, argNum)
 		else
 			name:SetTextByKey("value", GET_FULL_NAME(itemObj));
 		end
-
-		name:SetTextAlign("left", "center");
-
--- add code end
-
-		local count = ctrlSet:GetChild("count");
-		count:SetTextByKey("value", marketItem.count);
-		
-		local level = ctrlSet:GetChild("level");
-		level:SetTextByKey("value", itemObj.UseLv);
-
-		local price = ctrlSet:GetChild("price");
-		price:SetTextByKey("value", GetCommaedText(marketItem.sellPrice));
-		price:SetUserValue("Price", marketItem.sellPrice);
-		if cid == marketItem:GetSellerCID() then
-			local button_1 = ctrlSet:GetChild("button_1");
-			button_1:SetEnable(0);
-
-			local btnmargin = 639
-			if USE_MARKET_REPORT == 1 then
-				local button_report = ctrlSet:GetChild("button_report");
-				button_report:SetEnable(0);
-				btnmargin = 720
-			end
-
-			local btn = ctrlSet:CreateControl("button", "DETAIL_ITEM_" .. i, btnmargin, 8, 100, 50);
-			btn = tolua.cast(btn, "ui::CButton");
-			btn:ShowWindow(1);
-			btn:SetText("{@st41b}" .. ClMsg("Cancel"));
-			btn:SetTextAlign("center", "center");
-
-			if notUseAnim ~= true then
-				btn:SetAnimation("MouseOnAnim", "btn_mouseover");
-				btn:SetAnimation("MouseOffAnim", "btn_mouseoff");
-			end
-			btn:UseOrifaceRectTextpack(true)
-			btn:SetEventScript(ui.LBUTTONUP, "CANCEL_MARKET_ITEM");
-			btn:SetEventScriptArgString(ui.LBUTTONUP,marketItem:GetMarketGuid());
-			btn:SetSkinName("test_pvp_btn");
-			local totalPrice = ctrlSet:GetChild("totalPrice");
-			totalPrice:SetTextByKey("value", 0);
-		else
-			local btnmargin = 639
-			if USE_MARKET_REPORT == 1 then
-				btnmargin = 560
-			end
-			local numUpDown = ctrlSet:CreateControl("numupdown", "DETAIL_ITEM_" .. i, btnmargin, 20, 100, 30);
-			numUpDown = tolua.cast(numUpDown, "ui::CNumUpDown");
-			numUpDown:SetFontName("white_18_ol");
-			numUpDown:MakeButtons("btn_numdown", "btn_numup", "editbox");
-			numUpDown:ShowWindow(1);
-			numUpDown:SetMaxValue(marketItem.count);
-			numUpDown:SetMinValue(1);
-			numUpDown:SetNumChangeScp("MARKET_CHANGE_COUNT");
-			numUpDown:SetClickSound('button_click_chat');
-			numUpDown:SetNumberValue(1)
-
-			local totalPrice = ctrlSet:GetChild("totalPrice");
-				totalPrice:SetTextByKey("value", GetCommaedText(marketItem.sellPrice));
-				totalPrice:SetUserValue("Price", marketItem.sellPrice);
-		end		
-	end
-
-	itemlist:RealignItems();
-	GBOX_AUTO_ALIGN(itemlist, 10, 0, 0, false, true);
-
-	local maxPage = math.ceil(session.market.GetTotalCount() / MARKET_ITEM_PER_PAGE);
-	local curPage = session.market.GetCurPage();
-	local pagecontrol = GET_CHILD(frame, 'pagecontrol', 'ui::CPageController')
-	pagecontrol:SetMaxPage(maxPage);
-	pagecontrol:SetCurPage(curPage);
-
-	if nil ~= argNum and  argNum == 1 then
-		MARGET_FIND_PAGE(frame, session.market.GetCurPage());
+		name = tolua.cast(name, 'ui::CRichText');
+		name:SetTextAlign("left", "top");
 	end
 end
