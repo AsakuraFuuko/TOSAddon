@@ -3,7 +3,7 @@ marketshowlevel
 |images|images|
 |---|---|
 |![alt text](http://i.imgur.com/YC1b3hX.jpg "Gem Screenshot")|![alt text](http://i.imgur.com/u0egdkB.jpg "Card Screenshot")|
-|![alt text](http://i.imgur.com/lF1XSg5.png "Hair Screenshot")|![alt text](http://i.imgur.com/37rrlYU.png "Hair JP Screenshot")|
+|![alt text](http://i.imgur.com/z2JUa1g.png "Hair Screenshot")|![alt text](http://i.imgur.com/37rrlYU.png "Hair JP Screenshot")|
 |![alt text](http://i.imgur.com/3G617Gk.png "Spell Screenshot")|![alt text](http://i.imgur.com/JJYg6HJ.png "EquipJem Screenshot")|
 
 
@@ -32,13 +32,7 @@ marketshowlevel
 
 	■使い方
 
-**「_marketshowlevel-⛄-v1.0.3.ipf」以前が既にある場合は削除してください**
-
-ヘアアクセ日本語表記をされる方は「_marketshowlevel_jp-⛄-v1.0.4.ipf」をTree of Saviorインストールフォルダの「data」フォルダ内にコピーしてください。  
-Tree of Saviorのキャラログイン時に、チャット欄に「MARKET SHOW LEVEL v1.0.3 JP loaded!」が表示されていれば導入完了です。  
-
-通常版を導入される方は「_marketshowlevel-⛄-v1.0.4.ipf」をTree of Saviorインストールフォルダの「data」フォルダ内にコピーしてください。  
-Tree of Saviorのキャラログイン時に、チャット欄に「MARKET SHOW LEVEL v1.0.4 loaded!」が表示されていれば導入完了です。  
+[アドオンマネージャー](https://github.com/Excrulon/Tree-of-Savior-Addon-Manager)にてインストールしてください
 
 ### [EN]
 
@@ -60,44 +54,4 @@ Gems that are Gem Roasted will be displayed as Pink while Gems that are not roas
 
 	■ Installation
 
-** Delete "_marketshowlevel-⛄-v1.0.3.ipf" or earlier if it already exists **
-
-Please copy "_marketshowlevel-⛄-v1.0.4.ipf" into the "data" folder of the Tree of Savior installation folder. "MARKET SHOW LEVEL v1.0.4 loaded!" will be displayed in chat upon login if successful.
-
-	■ Notes
-
-Since affixes are generally long in English, they have been shortened to 6 characters or less. They are listed as follows:  
-* HP = HP Up
-* HPR = HP Recovery
-* SP = SP Up
-* SPR = SP Recovery
-* PATK = Physical Attack
-* MATK = Magical Attack
-* DEF = Defense
-* MDEF = Magic Defense
-* MAMP = Magic Amplification
-* CATK = Critical Attack
-* CRate = Critical Rate
-* CRes = Critical Resistance
-* BLK = Block
-* ACC = Accuracy
-* EVA = Evasion
-* FATK = Fire Attack
-* IATK = Ice Attack
-* PSNATK = Poison Attack
-* LATK = Lightning Attack
-* EATK = Earth Attack
-* GATK = Ghost Attack
-* HATK = Holy Attack
-* DATK = Dark Attack
-* FRES = Fire Resistance
-* IRES = Ice Resistance
-* PSNRES = Poison Resistance
-* LRES = Lightning Resistance
-* ERES = Earth Resistance
-* GRES = Ghost Resistance
-* HRES = Holy Resistance
-* DRES = Dark Resistance
-* MSpD = Movement Speed
-* AoE AR = AoE Attack Ratio
-* AoE DR = AoE Defense Ratio
+Addons are available on the [Addon Manager](https://github.com/Excrulon/Tree-of-Savior-Addon-Manager)
